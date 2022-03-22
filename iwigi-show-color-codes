@@ -7,12 +7,47 @@ function iwigi_show_color_codes() {
             $attributes = $product->get_attributes();
             
             foreach( $attributes as $attribute ) {
+            
+                // in_array()
                 if( 'pa_colour' === $attribute->get_name() && count($attribute->get_terms()) > 2 ) {
                     wp_enqueue_script( 'add-to-cart-variation', get_stylesheet_directory_uri() . '/assets/js/add-to-cart-variation.js', array('jquery'), '1.0.0', true );
                     wp_enqueue_style( 'iwigi-color', get_stylesheet_directory_uri() . '/assets/css/colorcodes.css', array(), '1.0.0' );
                 }
             }
         }
-    }
-}
+        
+        // change the default select dropdown text on product page
+        add_filter( 'woocommerce_dropdown_variation_attribute_options_args', 'filter_dropdown_variation_args', 10 );
+        function filter_dropdown_variation_args( $args ) {
+            $args['show_option_none'] = 'You can choose by number or colour below';
+            return $args;
+        }
+            }
+        }
 add_action( 'wp_enqueue_scripts', 'iwigi_show_color_codes', PHP_INT_MAX );
+
+// this js file should be renamed
+(function($){
+    $('select#pa_colour').change(function(){
+        var $this = $(this),
+            selectedColour = $this.val();
+        
+        if($this.parent().next().find('div').hasClass('vi-wpvs-option-wrap-selected')){
+            $this.parent().next().find('div.vi-wpvs-option-wrap-selected').removeClass('vi-wpvs-option-wrap-selected');
+        }
+        $this.parent().next().find('div[data-attribute_value=' + selectedColour + ']').removeClass('vi-wpvs-option-wrap-default').addClass('vi-wpvs-option-wrap-selected');
+    });
+})(jQuery);
+
+//this is a css file
+.vi-wpvs-select-attribute.vi-wpvs-select-attribute-attribute_pa_colour{
+    display: block !important; 
+    visibility: visible;
+}
+
+.vi-wpvs-select-attribute #pa_colour {
+    display: block !important; 
+    visibility: visible;
+ 	margin-top: 5px;
+    margin-bottom: 20px;
+}
