@@ -1,0 +1,18 @@
+function iwigi_show_color_codes() {
+    if( is_plugin_active( 'product-variations-swatches-for-woocommerce/product-variations-swatches-for-woocommerce.php' ) ) {
+        if( is_product() ) {
+            global $post;
+            
+            $product    = wc_get_product( $post->ID );
+            $attributes = $product->get_attributes();
+            
+            foreach( $attributes as $attribute ) {
+                if( 'pa_colour' === $attribute->get_name() && count($attribute->get_terms()) > 2 ) {
+                    wp_enqueue_script( 'add-to-cart-variation', get_stylesheet_directory_uri() . '/assets/js/add-to-cart-variation.js', array('jquery'), '1.0.0', true );
+                    wp_enqueue_style( 'iwigi-color', get_stylesheet_directory_uri() . '/assets/css/colorcodes.css', array(), '1.0.0' );
+                }
+            }
+        }
+    }
+}
+add_action( 'wp_enqueue_scripts', 'iwigi_show_color_codes', PHP_INT_MAX );
